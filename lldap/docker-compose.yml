@@ -6,25 +6,24 @@ services:
 
   lldap:
     image: nitnelave/lldap:stable
-    container_name: lldap
+    container_name: ${LLDAP_CONTAINER_NAME:-lldap}
     volumes:
       - ${APPDATA_DIR}/lldap:/data
     ports:
       - "3890:3890"
-      - "17170:17170"
     networks:
       - traefik
     labels:
+      net.unraid.docker.icon: ${MY_ICONS_URL}/ldap.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-lldap}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.lldap.entrypoints: https
       traefik.http.routers.lldap.middlewares: auth-chain@file
       traefik.http.routers.lldap.rule: Host(`${LLDAP_HOSTNAME:-lldap}.${DOMAIN_NAME}`)
       traefik.http.routers.lldap.service: lldap
       traefik.http.services.lldap.loadbalancer.server.port: 17170
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.icon: https://github.com/ptoulouse/unraid-server/blob/main/icons/mail-relay.png
-      net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-lldap}.${DOMAIN_NAME}
-      net.unraid.docker.shell: bash
     environment:
       UID: ${PUID}
       GID: ${PGID}

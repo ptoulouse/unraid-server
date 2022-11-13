@@ -2,3 +2,4 @@
 *.env
 secrets/*
 !secrets/.gitkeep
+authelia/configuration.yml
