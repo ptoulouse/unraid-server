@@ -1,0 +1,34 @@
+---
+#
+# Mail Relay - Relay mail from containers to a mail provider SMTP server
+#
+services:
+
+  mail-relay:
+    image: juanluisbaptiste/postfix:latest
+    container_name: ${MAIL_RELAY_CONTAINER_NAME:-mail-relay}
+    networks:
+      - mail_relay
+    labels:
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.icon: https://github.com/ptoulouse/unraid-server/blob/main/icons/mail-relay.png
+      net.unraid.docker.shell: bash
+    environment:
+      SMTP_SERVER: ${SMTP_SERVER}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      SERVER_HOSTNAME: ${SERVER_NAME}.${DOMAIN_NAME}
+      TZ: ${TZ}
+    secrets:
+      - smtp_password
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  mail_relay:
+    external: true
+
+secrets:
+  smtp_password:
+    file: ${SECRETS_DIR}/smtp_password
