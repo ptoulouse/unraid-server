@@ -3,3 +3,5 @@
 secrets/*
 !secrets/.gitkeep
 authelia/configuration.yml
+traefik/traefik.yml
+traefik/rules/*

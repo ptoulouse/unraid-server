@@ -1,0 +1,72 @@
+#
+# q
+#
+services:
+
+  traefik:
+    image: traefik:latest
+    container_name: ${TRAEFIK_CONTAINER_NAME:-traefik}
+    volumes:
+      - ${APPDATA_DIR}/traefik:/etc/traefik
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./rules:/etc/traefik/rules
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.icon: https://github.com/walkxcode/Dashboard-Icons/blob/main/png/traefik.png
+      net.unraid.docker.webui: https://${TRAEFIK_HOSTNAME:-traefik}.${DOMAIN_NAME}
+      net.unraid.docker.shell: bash
+      traefik.enable: "true"
+      # HTTP to HTTPS Redirect
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+      traefik.http.routers.http-catchall.entrypoints: http
+      traefik.http.routers.http-catchall.middlewares: redirect-to-https
+      traefik.http.routers.http-catchall.rule: HostRegexp(`{host:.+}`)
+      # Traefik Dashboard
+      traefik.http.routers.traefik.entrypoints: https
+      traefik.http.routers.traefik.middlewares: auth-chain@file
+      traefik.http.routers.traefik.rule: Host(`${TRAEFIK_HOSTNAME:-traefik}.${DOMAIN_NAME}`)
+      traefik.http.routers.traefik.service: api@internal
+    environment:
+      CF_DNS_API_TOKEN_FILE: /run/secrets/cloudflare_api_token
+      TZ: ${TZ}
+    secrets:
+      - cloudflare_api_token
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # Whoami - Simple test container. Prints HTTP requests.
+  whoami:
+    image: containous/whoami:latest
+    container_name: ${WHOAMI_CONTAINER_NAME:-whoami}
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.webui: https://${WHOAMI_HOSTNAME:-whoami}.${DOMAIN_NAME}
+      net.unraid.docker.shell: bash
+      traefik.enable: "true"
+      traefik.http.routers.whoami.entrypoints: https
+      traefik.http.routers.whoami.middlewares: authelia-chain@file
+      traefik.http.routers.whoami.rule: Host(`${WHOAMI_HOSTNAME:-whoami}.${DOMAIN_NAME}`)
+      traefik.http.routers.whoami.service: whoami
+      traefik.http.services.whoami.loadbalancer.server.port: 80
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+  
+networks:
+  traefik:
+    external: true
+
+secrets:
+  cloudflare_api_token:
+    file: ${SECRETS_DIR}/cloudflare_api_token
