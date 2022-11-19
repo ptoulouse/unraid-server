@@ -1,5 +1,6 @@
+---
 #
-# q
+# Traefik - Reverse proxy
 #
 services:
 
@@ -18,7 +19,7 @@ services:
       - traefik
     labels:
       net.unraid.docker.managed: composeman
-      net.unraid.docker.icon: https://github.com/walkxcode/Dashboard-Icons/blob/main/png/traefik.png
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/traefik.png
       net.unraid.docker.webui: https://${TRAEFIK_HOSTNAME:-traefik}.${DOMAIN_NAME}
       net.unraid.docker.shell: bash
       traefik.enable: "true"
