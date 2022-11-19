@@ -1,0 +1,35 @@
+---
+#
+# Watchtower - Containers base image automatic updater
+#
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: ${WATCHTOWER_CONTAINER_NAME:-watchtower}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/watchtower.png
+      net.unraid.docker.shell: bash
+
+    environment:
+      TZ: ${TZ}
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "true"
+      WATCHTOWER_NOTIFICATIONS: email
+      WATCHTOWER_NOTIFICATION_EMAIL_FROM: "Watchtower ${SERVER_NAME} <${NOTIFICATION_FROM}>"
+      WATCHTOWER_NOTIFICATION_EMAIL_TO: "${NOTIFICATION_TO}"
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER: mail-relay
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: 25
+      WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG: ${SERVER_NAME}
+      WATCHTOWER_SCHEDULE: "0 0 6 * * *"
+    networks:
+      - mail_relay
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  mail_relay:
+    external: true

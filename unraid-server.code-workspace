@@ -4,9 +4,5 @@
 			"path": "."
 		}
 	],
-	"settings": {
-		"files.associations": {
-			"docker-compose.yml": "dockercompose"
-		}
-	}
+	"settings": {}
 }

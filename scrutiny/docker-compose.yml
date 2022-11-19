@@ -1,0 +1,36 @@
+---
+#
+# Scrutiny - Web UI for S.M.A.R.T. monitoring
+#
+services:
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: ${SCRUTINY_CONTAINER_NAME:-scrutiny}
+    volumes:
+      - ${APPDATA_DIR}/scrutiny/config:/opt/scrutiny/config
+      - ${APPDATA_DIR}/scrutiny/influxdb:/opt/scrutiny/influxdb
+    devices:
+      - /dev/sdb
+      - /dev/sdc
+      - /dev/sdd
+      - /dev/sde
+      - /dev/nvme0
+    ports:
+      - "${SCRUTINY_PORT:-8080}:8080"
+    networks:
+      - traefik
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.scrutiny.entrypoints: https
+      traefik.http.routers.scrutiny.middlewares: auth-chain@file
+      traefik.http.routers.scrutiny.rule: Host(`${SCRUTINY_HOSTNAME:-scrutiny}.${DOMAIN_NAME}`)
+      traefik.http.routers.scrutiny.service: scrutiny
+      traefik.http.services.scrutiny.loadbalancer.server.port: 8080
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
+
+networks:
+  traefik:
+    external: true

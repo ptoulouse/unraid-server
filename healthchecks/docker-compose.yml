@@ -1,0 +1,66 @@
+---
+#
+# Healthchecks - A watchdog for your cron jobs
+#
+services:
+  
+  healthchecks:
+    image: lscr.io/linuxserver/healthchecks
+    container_name: ${HEALTHCHECKS_CONTAINER_NAME:-healthchecks}
+    volumes:
+      - ${APPDATA_DIR}/healthchecks:/config
+    networks:
+      - mail_relay
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/healthchecks.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: shell
+      net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-healthchecks}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.healthchecks-ping.entrypoints: https
+      traefik.http.routers.healthchecks-ping.middlewares: no-auth-chain@file
+      traefik.http.routers.healthchecks-ping.priority: 2
+      traefik.http.routers.healthchecks-ping.rule: Host(`${HEALTHCHECKS_HOSTNAME:-healthchecks}.${DOMAIN_NAME}`) && PathPrefix(`/ping`)
+      traefik.http.routers.healthchecks-ping.service: healthchecks
+      traefik.http.routers.healthchecks.entrypoints: https
+      traefik.http.routers.healthchecks.middlewares: auth-chain@file
+      traefik.http.routers.healthchecks.priority: 1
+      traefik.http.routers.healthchecks.rule: Host(`${HEALTHCHECKS_HOSTNAME:-healthchecks}.${DOMAIN_NAME}`)
+      traefik.http.routers.healthchecks.service: healthchecks
+      traefik.http.services.healthchecks.loadbalancer.server.port: 8000
+    environment:
+      DEFAULT_FROM_EMAIL: ${NOTIFICATION_FROM}
+      EMAIL_HOST: mail-relay
+      EMAIL_HOST_PASSWORD: ""
+      EMAIL_HOST_USER: ""
+      EMAIL_PORT: 25
+      EMAIL_USE_TLS: "False"
+      PGID: ${PGID}
+      PUID: ${PUID}
+      REGENERATE_SETTINGS: "True"
+      REGISTRATION_OPEN: "False"
+      FILE__SECRET_KEY: /run/secrets/healthchecks_secret_key
+      SITE_ROOT: "https://${HEALTHCHECKS_HOSTNAME:-healthchecks}.${DOMAIN_NAME}"
+      SITE_NAME: "Homelab Healthchecks"
+      SUPERUSER_EMAIL: admin@${DOMAIN_NAME}
+      FILE__SUPERUSER_PASSWORD: /run/secrets/admin_password
+      TZ: ${TZ}
+    secrets:
+      - admin_password
+      - healthchecks_secret_key
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+      
+networks:
+  mail_relay:
+    external: true
+  traefik:
+    external: true
+
+secrets:
+  admin_password:
+    file: ${SECRETS_DIR}/admin_password
+  healthchecks_secret_key:
+    file: ${SECRETS_DIR}/healthchecks_secret_key

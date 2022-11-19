@@ -19,7 +19,7 @@ services:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/authelia.png
       net.unraid.docker.managed: composeman
       net.unraid.docker.shell: shell
-      net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-lldap}.${DOMAIN_NAME}
+      net.unraid.docker.webui: https://${AUTHELIA_HOSTNAME:-auth}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.authelia.entrypoints: https
       traefik.http.routers.authelia.middlewares: no-auth-chain@file

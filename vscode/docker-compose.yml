@@ -1,0 +1,44 @@
+---
+#
+# vscode - Open VS Code server
+#
+services:
+
+  vscode:
+    image: lscr.io/linuxserver/openvscode-server:latest
+    container_name: ${VSCODE_CONTAINER_NAME:-vscode}
+    volumes:
+      - ${APPDATA_DIR}/vscode:/config
+      - ${APPDATA_DIR}:/appdata
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/vscode.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: "https://${VSCODE_HOSTNAME:-vscode}.${DOMAIN_NAME}/?tkn=${VSCODE_TOKEN}"
+      traefik.enable: "true"
+      traefik.http.routers.vscode.entrypoints: https
+      traefik.http.routers.vscode.middlewares: no-auth-chain@file
+      traefik.http.routers.vscode.rule: Host(`${VSCODE_HOSTNAME:-vscode}.${DOMAIN_NAME}`)
+      traefik.http.routers.vscode.service: vscode
+      traefik.http.services.vscode.loadbalancer.server.port: 3000
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      CONNECTION_TOKEN: ${VSCODE_TOKEN}
+      FILE__SUDO_PASSWORD: /run/secrets/vscode_sudo_password
+    secrets:
+      - vscode_sudo_password
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  traefik:
+    external: true
+
+secrets:
+  vscode_sudo_password:
+    file: ${SECRETS_DIR}/vscode_sudo_password

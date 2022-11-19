@@ -1,0 +1,29 @@
+---
+#
+# Rest Server - Restic Rest Server - HTTP server backend for Restic
+#
+services:
+
+  rest-server:
+    image: restic/rest-server:latest
+    container_name: ${REST_SERVER_CONTAINER_NAME:-rest-server}
+    volumes:
+      - ${BACKUP_DIR}/restic:/data
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    ports:
+      - "${REST_SERVER_PORT:-8000}:8000"
+    networks:
+      - internal
+    labels:
+      net.unraid.docker.icon: ${MY_ICONS_URL}/restic-rest-server.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+    environment:
+      TZ: ${TZ}
+    user: ${PUID}:${PGID}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  internal:
