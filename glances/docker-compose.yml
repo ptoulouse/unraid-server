@@ -1,0 +1,34 @@
+#
+# Glances - System monitoring
+#
+services:
+
+  glances:
+    image: nicolargo/glances:latest
+    container_name: ${GLANCES_CONTAINER_NAME:-glances}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/glances.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${GLANCES_HOSTNAME:-glances}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.glances.entrypoints: https
+      traefik.http.routers.glances.middlewares: auth-chain@file
+      traefik.http.routers.glances.rule: Host(`${GLANCES_HOSTNAME:-glances}.{DOMAIN_NAME}`)
+      traefik.http.routers.glances.service: glances
+      traefik.http.services.glances.loadbalancer.server.port: 61208
+    environment:
+      GLANCES_OPT: "-w"
+    privileged: true
+    restart: unless-stopped
+    pid: host
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  traefik:
+    external: true

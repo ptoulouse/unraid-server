@@ -1,0 +1,31 @@
+---
+#
+# Dozzle - Realtime log viewer for Docker containers
+#
+services:
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: ${DOZZLE_CONTAINER_NAME:-dozzle}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/dozzle.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.webui: https://${DOZZLE_HOSTNAME:-dozzle}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.dozzle.entrypoints: https
+      traefik.http.routers.dozzle.middlewares: auth-chain@file
+      traefik.http.routers.dozzle.rule: Host(`${DOZZLE_HOSTNAME:-dozzle}.${DOMAIN_NAME}`)
+      traefik.http.routers.dozzle.service: dozzle
+      traefik.http.services.dozzle.loadbalancer.server.port: 8080
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  traefik:
+    external: true
