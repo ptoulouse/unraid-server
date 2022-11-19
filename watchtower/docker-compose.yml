@@ -11,7 +11,6 @@ services:
     labels:
       net.unraid.docker.managed: composeman
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/watchtower.png
-      net.unraid.docker.shell: bash
 
     environment:
       TZ: ${TZ}

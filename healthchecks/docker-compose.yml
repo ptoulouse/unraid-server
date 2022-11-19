@@ -15,7 +15,7 @@ services:
     labels:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/healthchecks.png
       net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: shell
+      net.unraid.docker.shell: bash
       net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-healthchecks}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.healthchecks-ping.entrypoints: https

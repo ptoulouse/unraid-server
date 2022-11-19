@@ -20,6 +20,10 @@ services:
     networks:
       - traefik
     labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/scrutiny.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${SCRUTINY_HOSTNAME:-scrutiny}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.scrutiny.entrypoints: https
       traefik.http.routers.scrutiny.middlewares: auth-chain@file

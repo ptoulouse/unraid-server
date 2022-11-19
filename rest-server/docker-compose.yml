@@ -17,7 +17,7 @@ services:
     labels:
       net.unraid.docker.icon: ${MY_ICONS_URL}/restic-rest-server.png
       net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: bash
+      net.unraid.docker.shell: sh
     environment:
       TZ: ${TZ}
     user: ${PUID}:${PGID}
