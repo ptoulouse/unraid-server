@@ -1,0 +1,69 @@
+---
+#
+# Music Server built with Logitech Media Server and MusicIP 
+#
+services:
+
+  # Logitech Media Server - Music Server
+  lms:
+    image: lmscommunity/logitechmediaserver:stable
+    container_name: ${LMS_CONTAINER_NAME:-lms}
+    volumes:
+      - ${APPDATA_DIR}/lms/lms:/config
+      - ${APPDATA_DIR}/lms/playlists:/playlist
+      - ${MUSIC_DIR}:/music:ro
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: host
+    labels:
+      net.unraid.docker.icon: ${MY_ICONS_URL}/logitech-media-server.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${LMS_HOSTNAME:-lms}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.lms.entrypoints: https
+      traefik.http.routers.lms.middlewares: auth-chain@file
+      traefik.http.routers.lms.rule: Host(`${LMS_HOSTNAME:-lms}.${DOMAIN_NAME}`)
+      traefik.http.routers.lms.service: lms
+      traefik.http.services.lms.loadbalancer.server.port: 9000
+    environment:
+      PGID: ${PGID}
+      PUID: ${PUID}
+    depends_on:
+      - musicip
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # MusicIP - Automatic music playlists creation, based on the tracks sound profile
+  musicip:
+    image: ptoulouse/musicip:latest
+    container_name: ${MUSICIP_CONTAINER_NAME:-musicip}
+    volumes:
+      - ${APPDATA_DIR}/lms/musicip:/config
+      - ${MUSIC_DIR}:/music
+    ports:
+      - "10002:10002"
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${MY_ICONS_URL}/musicip.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${MUSICIP_HOSTNAME:-musicip}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.musicip.entrypoints: https
+      traefik.http.routers.musicip.middlewares: auth-chain@file
+      traefik.http.routers.musicip.rule: Host(`${MUSICIP_HOSTNAME:-musicip}.${DOMAIN_NAME}`)
+      traefik.http.routers.musicip.service: musicip
+      traefik.http.services.musicip.loadbalancer.server.port: 10002
+    environment:
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  traefik:
+    external: true
