@@ -1,0 +1,112 @@
+---
+#
+# Bookstack - Simple Wiki software
+#
+services:
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack
+    container_name: ${BOOKSTACK_CONTAINER_NAME:-bookstack}
+    volumes:
+        - ${APPDATA_DIR}/bookstack/config:/config
+    networks:
+      - internal
+      - mail_relay
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/bookstack.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${BOOKSTACK_HOSTNAME:-bookstack}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.bookstack.entrypoints: https
+      traefik.http.routers.bookstack.middlewares: auth-chain@file
+      traefik.http.routers.bookstack.rule: Host(`${BOOKSTACK_HOSTNAME:-bookstack}.${DOMAIN_NAME}`)
+      traefik.http.routers.bookstack.service: bookstack
+      traefik.http.services.bookstack.loadbalancer.server.port: 80
+    environment:
+      # APP_DEBUG: "true"
+      APP_LANG: fr
+      APP_URL: https://${BOOKSTACK_HOSTNAME:-bookstack}.${DOMAIN_NAME}
+      AUTH_METHOD: oidc
+      DB_DATABASE: bookstack
+      DB_HOST: ${BOOKSTACK_DB_CONTAINER_NAME:-bookstack-db}
+      DB_USER: bookstack
+      FILE__DB_PASS: /run/secrets/bookstack_db_password
+      # LDAP_SERVER: ldap://lldap:3890
+      # LDAP_BASE_DN: ou=users,{{ openldap_base_dn }}
+      # LDAP_DN: cn={{ openldap_readonly_username }},{{ openldap_base_dn }}
+      # FILE__LDAP_PASS: /run/secrets/lldap_user_password
+      # LDAP_USER_FILTER: (&(uid=$${user}))
+      # LDAP_ID_ATTRIBUTE: uid
+      # LDAP_EMAIL_ATTRIBUTE: mail
+      # LDAP_DISPLAY_NAME_ATTRIBUTE: cn
+      # LDAP_TLS_INSECURE: "true"
+      # LDAP_USER_TO_GROUPS: "true"
+      # LDAP_GROUP_ATTRIBUTE: memberOf
+      # LDAP_REMOVE_FROM_GROUPS: "false"
+      # LDAP_VERSION: 3
+      OIDC_NAME: Authelia
+      OIDC_DISPLAY_NAME_CLAIMS: name
+      OIDC_CLIENT_ID: bookstack
+      OIDC_CLIENT_SECRET: VIcA0Djk1mxGKEZrbb3Hb8qr0EsIsJEoVMC90NXPvJ5WRpXmMcVigY7wuvHEEVPf
+      OIDC_ISSUER: https://${AUTHELIA_HOSTNAME:-auth}.${DOMAIN_NAME}
+      OIDC_ISSUER_DISCOVER: "true"
+      OIDC_USER_TO_GROUPS: "true"
+      OIDC_GROUPS_CLAIM: groups
+      OIDC_ADDITIONAL_SCOPES: groups
+      OIDC_REMOVE_FROM_GROUPS: "true"
+      MAIL_DRIVER: smtp
+      MAIL_FROM_NAME: Bookstack
+      MAIL_HOST: mail-relay
+      MAIL_PORT: 25
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+      WKHTMLTOPDF: /usr/bin/wkhtmltopdf
+    secrets:
+      - bookstack_db_password
+      # - lldap_user_password
+    depends_on:
+      - bookstack-db
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  bookstack-db:
+    image: lscr.io/linuxserver/mariadb
+    container_name: ${BOOKSTACK_DB_CONTAINER_NAME:-bookstack-db}
+    volumes:
+      - ${APPDATA_DIR}/bookstack/db:/config
+    networks:
+      - internal
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/mariadb.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+    environment:
+      MYSQL_DATABASE: bookstack
+      FILE__MYSQL_PASSWORD: /run/secrets/bookstack_db_password
+      FILE__MYSQL_ROOT_PASSWORD: /run/secrets/bookstack_db_password
+      MYSQL_USER: bookstack
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+    secrets:
+      - bookstack_db_password
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  internal:
+  mail_relay:
+    external: true
+  traefik:
+    external: true
+
+secrets:
+  # lldap_user_password:
+  #   file: ${SECRETS_DIR}/lldap_user_password
+  bookstack_db_password:
+    file: ${SECRETS_DIR}/bookstack_db_password
