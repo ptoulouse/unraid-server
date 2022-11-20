@@ -1,0 +1,67 @@
+---
+#
+# Book servers - Download or email ebooks to your reader
+#
+services:
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web
+    container_name: ${CALIBRE_WEB_CONTAINER_NAME:-calibre-web}
+    volumes:
+      - ${APPDATA_DIR}/ebooks/calibre-web:/config
+      - ${BOOKS_DIR}:/books
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/calibreweb.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${CALIBRE_WEB_HOSTNAME:-calibre-web}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.calibre-web.entrypoints: https
+      traefik.http.routers.calibre-web.middlewares: auth-chain@file
+      traefik.http.routers.calibre-web.rule: Host(`${CALIBRE_WEB_HOSTNAME:-calibre-web}.${DOMAIN_NAME}`)
+      traefik.http.routers.calibre-web.service: calibre-web
+      traefik.http.services.calibre-web.loadbalancer.server.port: 8083
+    environment:
+      DOCKER_MODS: linuxserver/calibre-web:calibre
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  cops:
+    image: lscr.io/linuxserver/cops
+    container_name: ${COPS_CONTAINER_NAME:-cops}
+    volumes:
+      - ${APPDATA_DIR}/ebooks/cops:/config
+      - ${BOOKS_DIR}:/books
+    networks:
+      - traefik
+      - mail_relay
+    labels:
+      net.unraid.docker.icon: ${MY_ICONS_URL}/cops.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: sh
+      net.unraid.docker.webui: https://${COPS_HOSTNAME:-cops}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.cops.entrypoints: https
+      traefik.http.routers.cops.middlewares: auth-chain@file
+      traefik.http.routers.cops.rule: Host(`${COPS_HOSTNAME:-cops}.${DOMAIN_NAME}`)
+      traefik.http.routers.cops.service: cops
+      traefik.http.services.cops.loadbalancer.server.port: 80
+    environment:
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  mail_relay:
+    external: true
+  traefik:
+    external: true
