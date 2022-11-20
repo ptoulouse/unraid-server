@@ -1,0 +1,69 @@
+---
+#
+# Plex Media Server - Server for TV Series, movies and music
+#
+services:
+
+  plex:
+    image: lscr.io/linuxserver/plex
+    container_name: ${PLEX_CONTAINER_NAME:-plex}
+    volumes:
+      - ${APPDATA_DIR}/plex/plex:/config
+      - ${PHOTOS_DIR}:/Photos
+      - ${MOVIES_DIR}:/Movies
+      - ${MUSIC_DIR}:/Music
+      - /tmp:/transcode
+      - ${TV_DIR}:/TV
+    network_mode: host
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/plex.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${PLEX_HOSTNAME:-plex}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.plex.entrypoints: https
+      traefik.http.routers.plex.middlewares: no-auth-chain@file
+      traefik.http.routers.plex.rule: Host(`${PLEX_HOSTNAME:-plex}.${DOMAIN_NAME}`)
+      traefik.http.routers.plex.service: plex
+      traefik.http.services.plex.loadbalancer.server.port: 32400
+    environment:
+      PGID: ${PGID}
+      PUID: ${PUID}
+      VERSION: docker
+      TZ: ${TZ}
+    hostname: plex1
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # Tautulli - Monitoring, analytics and notifications for Plex Media Server
+  tautulli:
+    image: lscr.io/linuxserver/tautulli
+    container_name: ${TAUTULLI_CONTAINER_NAME:-tautulli}
+    volumes:
+      - ${APPDATA_DIR}/plex/plex/Library/Application Support/Plex Media Server/Logs:/logs:ro
+      - ${APPDATA_DIR}/plex/tautulli:/config
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/tautulli.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${TAUTULLI_HOSTNAME:-tautulli}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.tautulli.entrypoints: https
+      traefik.http.routers.tautulli.middlewares: auth-chain@file
+      traefik.http.routers.tautulli.rule: Host(`${TAUTULLI_HOSTNAME:-tautulli}.${DOMAIN_NAME}`)
+      traefik.http.routers.tautulli.service: tautulli
+      traefik.http.services.tautulli.loadbalancer.server.port: 8181
+    environment:
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  traefik:
+    external: true
