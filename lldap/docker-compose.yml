@@ -28,10 +28,10 @@ services:
       TZ: ${TZ}
       LLDAP_JWT_SECRET_FILE: /run/secrets/lldap_jwt_secret
       LLDAP_LDAP_BASE_DN: ${LDAP_BASE_DN}
-      LLDAP_LDAP_USER_PASS_FILE: /run/secrets/lldap_user_password
+      LLDAP_LDAP_USER_PASS_FILE: /run/secrets/lldap_admin_password
     secrets:
       - lldap_jwt_secret
-      - lldap_user_password
+      - lldap_admin_password
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -43,5 +43,5 @@ networks:
 secrets:
   lldap_jwt_secret:
     file: ${SECRETS_DIR}/lldap_jwt_secret
-  lldap_user_password:
-    file: ${SECRETS_DIR}/lldap_user_password
+  lldap_admin_password:
+    file: ${SECRETS_DIR}/lldap_admin_password

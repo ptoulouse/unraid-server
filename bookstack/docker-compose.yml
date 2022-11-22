@@ -36,7 +36,7 @@ services:
       # LDAP_SERVER: ldap://lldap:3890
       # LDAP_BASE_DN: ou=users,{{ openldap_base_dn }}
       # LDAP_DN: cn={{ openldap_readonly_username }},{{ openldap_base_dn }}
-      # FILE__LDAP_PASS: /run/secrets/lldap_user_password
+      # FILE__LDAP_PASS: /run/secrets/lldap_admin_password
       # LDAP_USER_FILTER: (&(uid=$${user}))
       # LDAP_ID_ATTRIBUTE: uid
       # LDAP_EMAIL_ATTRIBUTE: mail
@@ -66,7 +66,7 @@ services:
       WKHTMLTOPDF: /usr/bin/wkhtmltopdf
     secrets:
       - bookstack_db_password
-      # - lldap_user_password
+      # - lldap_admin_password
     depends_on:
       - bookstack-db
     restart: unless-stopped
@@ -106,7 +106,7 @@ networks:
     external: true
 
 secrets:
-  # lldap_user_password:
-  #   file: ${SECRETS_DIR}/lldap_user_password
+  # lldap_admin_password:
+  #   file: ${SECRETS_DIR}/lldap_admin_password
   bookstack_db_password:
     file: ${SECRETS_DIR}/bookstack_db_password
