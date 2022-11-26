@@ -55,7 +55,7 @@ services:
       net.unraid.docker.webui: https://${WHOAMI_HOSTNAME:-whoami}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.whoami.entrypoints: https
-      traefik.http.routers.whoami.middlewares: authelia-chain@file
+      traefik.http.routers.whoami.middlewares: auth-chain@file
       traefik.http.routers.whoami.rule: Host(`${WHOAMI_HOSTNAME:-whoami}.${DOMAIN_NAME}`)
       traefik.http.routers.whoami.service: whoami
       traefik.http.services.whoami.loadbalancer.server.port: 80
