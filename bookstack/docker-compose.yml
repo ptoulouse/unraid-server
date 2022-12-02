@@ -33,19 +33,6 @@ services:
       DB_HOST: ${BOOKSTACK_DB_CONTAINER_NAME:-bookstack-db}
       DB_USER: bookstack
       FILE__DB_PASS: /run/secrets/bookstack_db_password
-      # LDAP_SERVER: ldap://lldap:3890
-      # LDAP_BASE_DN: ou=users,{{ openldap_base_dn }}
-      # LDAP_DN: cn={{ openldap_readonly_username }},{{ openldap_base_dn }}
-      # FILE__LDAP_PASS: /run/secrets/lldap_admin_password
-      # LDAP_USER_FILTER: (&(uid=$${user}))
-      # LDAP_ID_ATTRIBUTE: uid
-      # LDAP_EMAIL_ATTRIBUTE: mail
-      # LDAP_DISPLAY_NAME_ATTRIBUTE: cn
-      # LDAP_TLS_INSECURE: "true"
-      # LDAP_USER_TO_GROUPS: "true"
-      # LDAP_GROUP_ATTRIBUTE: memberOf
-      # LDAP_REMOVE_FROM_GROUPS: "false"
-      # LDAP_VERSION: 3
       OIDC_NAME: Authelia
       OIDC_DISPLAY_NAME_CLAIMS: name
       OIDC_CLIENT_ID: bookstack
