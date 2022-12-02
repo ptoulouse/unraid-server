@@ -18,14 +18,8 @@ services:
       net.unraid.docker.shell: bash
       net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-healthchecks}.${DOMAIN_NAME}
       traefik.enable: "true"
-      traefik.http.routers.healthchecks-ping.entrypoints: https
-      traefik.http.routers.healthchecks-ping.middlewares: no-auth-chain@file
-      traefik.http.routers.healthchecks-ping.priority: 2
-      traefik.http.routers.healthchecks-ping.rule: Host(`${HEALTHCHECKS_HOSTNAME:-healthchecks}.${DOMAIN_NAME}`) && PathPrefix(`/ping`)
-      traefik.http.routers.healthchecks-ping.service: healthchecks
       traefik.http.routers.healthchecks.entrypoints: https
       traefik.http.routers.healthchecks.middlewares: auth-chain@file
-      traefik.http.routers.healthchecks.priority: 1
       traefik.http.routers.healthchecks.rule: Host(`${HEALTHCHECKS_HOSTNAME:-healthchecks}.${DOMAIN_NAME}`)
       traefik.http.routers.healthchecks.service: healthchecks
       traefik.http.services.healthchecks.loadbalancer.server.port: 8000
