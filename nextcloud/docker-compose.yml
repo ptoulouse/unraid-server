@@ -24,7 +24,7 @@ services:
       traefik.http.middlewares.nextcloud-dav.redirectregex.regex: "^https://(.*)/.well-known/(card|cal)dav"
       traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: "https://$${1}/remote.php/dav/"
       traefik.http.routers.nextcloud.entrypoints: https
-      traefik.http.routers.nextcloud.middlewares: nextcloud-dav@docker,no-auth-chain@file
+      traefik.http.routers.nextcloud.middlewares: nextcloud-dav@docker,auth-chain@file
       traefik.http.routers.nextcloud.rule: Host(`${NETCLOUD_HOSTNAME:-nextcloud}.${DOMAIN_NAME}`)
       traefik.http.routers.nextcloud.service: nextcloud
       traefik.http.services.nextcloud.loadbalancer.server.port: 80

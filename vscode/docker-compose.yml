@@ -19,7 +19,7 @@ services:
       net.unraid.docker.webui: "https://${VSCODE_HOSTNAME:-vscode}.${DOMAIN_NAME}/?tkn=${VSCODE_TOKEN}"
       traefik.enable: "true"
       traefik.http.routers.vscode.entrypoints: https
-      traefik.http.routers.vscode.middlewares: no-auth-chain@file
+      traefik.http.routers.vscode.middlewares: auth-chain@file
       traefik.http.routers.vscode.rule: Host(`${VSCODE_HOSTNAME:-vscode}.${DOMAIN_NAME}`)
       traefik.http.routers.vscode.service: vscode
       traefik.http.services.vscode.loadbalancer.server.port: 3000

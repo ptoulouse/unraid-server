@@ -22,7 +22,7 @@ services:
       net.unraid.docker.webui: https://${PLEX_HOSTNAME:-plex}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.plex.entrypoints: https
-      traefik.http.routers.plex.middlewares: no-auth-chain@file
+      traefik.http.routers.plex.middlewares: auth-chain@file
       traefik.http.routers.plex.rule: Host(`${PLEX_HOSTNAME:-plex}.${DOMAIN_NAME}`)
       traefik.http.routers.plex.service: plex
       traefik.http.services.plex.loadbalancer.server.port: 32400

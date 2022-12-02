@@ -22,7 +22,7 @@ services:
       net.unraid.docker.webui: https://${AUTHELIA_HOSTNAME:-auth}.${DOMAIN_NAME}
       traefik.enable: "true"
       traefik.http.routers.authelia.entrypoints: https
-      traefik.http.routers.authelia.middlewares: no-auth-chain@file
+      traefik.http.routers.authelia.middlewares: auth-chain@file
       traefik.http.routers.authelia.rule: Host(`${AUTHELIA_HOSTNAME:-auth}.${DOMAIN_NAME}`)
       traefik.http.routers.authelia.service: authelia
       traefik.http.services.authelia.loadbalancer.server.port: 9091
