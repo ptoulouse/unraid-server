@@ -40,6 +40,7 @@ services:
       PUID: ${PUID}
       REGENERATE_SETTINGS: "True"
       REGISTRATION_OPEN: "False"
+      REMOTE_USER_HEADER: HTTP_REMOTE_EMAIL
       FILE__SECRET_KEY: /run/secrets/healthchecks_secret_key
       SITE_ROOT: "https://${HEALTHCHECKS_HOSTNAME:-healthchecks}.${DOMAIN_NAME}"
       SITE_NAME: "Homelab Healthchecks"
