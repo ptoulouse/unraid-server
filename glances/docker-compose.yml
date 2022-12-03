@@ -18,7 +18,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.glances.entrypoints: https
       traefik.http.routers.glances.middlewares: auth-chain@file
-      traefik.http.routers.glances.rule: Host(`${GLANCES_HOSTNAME:-glances}.{DOMAIN_NAME}`)
+      traefik.http.routers.glances.rule: Host(`${GLANCES_HOSTNAME:-glances}.${DOMAIN_NAME}`)
       traefik.http.routers.glances.service: glances
       traefik.http.services.glances.loadbalancer.server.port: 61208
     environment:
