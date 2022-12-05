@@ -1,0 +1,60 @@
+---
+http:
+  routers:
+    nas01:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: nas01
+      rule: Host(`nas01.{{env "DOMAIN_NAME"}}`)
+    nas02:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: nas02
+      rule: Host(`nas02.{{env "DOMAIN_NAME"}}`)
+    octoprint:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: octoprint
+      rule: Host(`octoprint.{{env "DOMAIN_NAME"}}`)
+    router01:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: router01
+      rule: Host(`router01.{{env "DOMAIN_NAME"}}`)
+    router02:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: router02
+      rule: Host(`router02.{{env "DOMAIN_NAME"}}`)
+
+  services:
+    nas01:
+      loadBalancer:
+        servers:
+          - url: http://192.168.121.2:8080
+    nas02:
+      loadBalancer:
+        servers:
+          - url: http://192.168.121.11:80
+    octoprint:
+      loadBalancer:
+        servers:
+          - url: http://192.168.121.9:80
+    router01:
+      loadBalancer:
+        servers:
+          - url: http://192.168.121.1:80
+    router02:
+      loadBalancer:
+        servers:
+          - url: http://192.168.122.1:80

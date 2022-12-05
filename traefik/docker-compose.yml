@@ -65,6 +65,9 @@ services:
     environment:
       CF_DNS_API_TOKEN_FILE: /run/secrets/cloudflare_api_token
       TZ: ${TZ}
+      # Following variables are passed to traefik to use in dynamic rules
+      TRAEFIK_FORWARDAUTH_ADDRESS: ${TRAEFIK_FORWARD_AUTH_ADDRESS}
+      DOMAIN_NAME: ${DOMAIN_NAME}
     secrets:
       - cloudflare_api_token
     extra_hosts:

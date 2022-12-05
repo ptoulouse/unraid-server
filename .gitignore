@@ -4,4 +4,4 @@ secrets/*
 !secrets/.gitkeep
 authelia/configuration.yml
 traefik/traefik.yml
-traefik/rules/*.yml
+traefik/rules/external_hosts.yml
