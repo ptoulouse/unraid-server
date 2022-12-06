@@ -48,8 +48,6 @@ services:
 networks:
   mail_relay:
     external: true
-  openldap:
-    external: true
   traefik:
     external: true
 
