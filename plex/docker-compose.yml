@@ -31,7 +31,6 @@ services:
       PUID: ${PUID}
       VERSION: docker
       TZ: ${TZ}
-    hostname: plex1
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

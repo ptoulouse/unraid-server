@@ -45,7 +45,7 @@ http:
     nas02:
       loadBalancer:
         servers:
-          - url: http://192.168.121.11:8080
+          - url: http://192.168.122.11:8080
     octoprint:
       loadBalancer:
         servers:
