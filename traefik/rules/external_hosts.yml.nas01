@@ -22,20 +22,20 @@ http:
         - auth-chain
       service: octoprint
       rule: Host(`octoprint.{{env "DOMAIN_NAME"}}`)
-    router01:
+    router:
       entryPoints:
         - https
       middlewares:
         - auth-chain
-      service: router01
-      rule: Host(`router01.{{env "DOMAIN_NAME"}}`)
-    router02:
+      service: router
+      rule: Host(`router.{{env "DOMAIN_NAME"}}`)
+    pcp:
       entryPoints:
         - https
       middlewares:
         - auth-chain
-      service: router02
-      rule: Host(`router02.{{env "DOMAIN_NAME"}}`)
+      service: pcp
+      rule: Host(`pcp.{{env "DOMAIN_NAME"}}`)
 
   services:
     nas01:
@@ -50,11 +50,11 @@ http:
       loadBalancer:
         servers:
           - url: http://192.168.121.9:80
-    router01:
+    router:
       loadBalancer:
         servers:
           - url: http://192.168.121.1:80
-    router02:
+    pcp:
       loadBalancer:
         servers:
-          - url: http://192.168.122.1:80
+          - url: http://192.168.121.8:80
