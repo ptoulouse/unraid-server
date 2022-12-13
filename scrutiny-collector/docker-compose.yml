@@ -1,0 +1,30 @@
+#
+# Scrutiny collector - Collector for S.M.A.R.T. monitoring
+#
+services:
+
+  scrutiny-collector:
+    image: ghcr.io/analogj/scrutiny:master-collector
+    container_name: ${SCRUTINY_COLLECTOR_CONTAINER_NAME:-scrutiny-collector}
+    volumes:
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/sdb:/dev/sdb
+      - /dev/sdc:/dev/sdc
+      - /dev/sdd:/dev/sdd
+    networks:
+      - internal
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/scrutiny.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+    environment:
+      COLLECTOR_API_ENDPOINT: ${SCRUTINY_API_ENDPOINT}
+      COLLECTOR_HOST_ID: ${SERVER_NAME}
+      TZ: ${TZ}
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO
+
+networks:
+  internal:
