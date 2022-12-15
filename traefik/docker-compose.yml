@@ -34,6 +34,7 @@ services:
       - --log.level=INFO # (Default: ERROR). Valid values: DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
+      - --providers.docker.endpoint=tcp://docker-proxy:2375
       - --providers.docker.network=traefik
       - --providers.file.directory=/config/rules # Directory for dynamic configurations
       - --providers.file.watch=true
@@ -45,6 +46,7 @@ services:
       - "80:80"
       - "443:443"
     networks:
+      - docker_proxy
       - traefik
     labels:
       net.unraid.docker.managed: composeman
@@ -96,6 +98,8 @@ services:
       - no-new-privileges:true
   
 networks:
+  docker_proxy:
+    external: true
   traefik:
     external: true
 
