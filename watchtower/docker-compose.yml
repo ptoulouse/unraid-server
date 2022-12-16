@@ -8,13 +8,16 @@ services:
     container_name: ${WATCHTOWER_CONTAINER_NAME:-watchtower}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "${WATCHTOWER_PORT:-8080}:8080"
     labels:
       net.unraid.docker.managed: composeman
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/watchtower.png
-
     environment:
       TZ: ${TZ}
       WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_HTTP_API_METRICS: "true"
+      WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_API_TOKEN}
       WATCHTOWER_INCLUDE_STOPPED: "true"
       WATCHTOWER_NOTIFICATIONS: email
       WATCHTOWER_NOTIFICATION_EMAIL_FROM: "Watchtower ${SERVER_NAME} <${NOTIFICATION_FROM}>"
