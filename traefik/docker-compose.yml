@@ -12,6 +12,7 @@ services:
       - --accessLog.fields.names.StartUTC=drop
       - --accessLog.filters.statusCodes=400-499
       - --api=true
+      - --api.insecure=true
       # Add Cloudflare as DNS Cert Resolver for all services. Also enable TLS.
       # Uncomment next line when testing - LetsEncrypt Staging Server
       # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory 
@@ -41,7 +42,6 @@ services:
     volumes:
       - ${APPDATA_DIR}/traefik:/config
       - ./rules:/config/rules
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - "80:80"
       - "443:443"
