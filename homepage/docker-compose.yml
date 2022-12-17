@@ -1,0 +1,36 @@
+---
+#
+# Homepage - A highly customizable homepage
+#
+services:
+
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    container_name: ${HOMEPAGE_CONTAINER_NAME:-homepage}
+    volumes:
+      - ${APPDATA_DIR}/homepage:/app/config
+    networks:
+      - docker_proxy
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/homepage.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${HOMEPAGE_HOSTNAME:-homepage}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.homepage.entrypoints: https
+      traefik.http.routers.homepage.middlewares: auth-chain@file
+      traefik.http.routers.homepage.rule: Host(`${HOMEPAGE_HOSTNAME:-homepage}.${DOMAIN_NAME}`)
+      traefik.http.routers.homepage.service: homepage
+      traefik.http.services.homepage.loadbalancer.server.port: 3000
+    environment:
+      LOG_LEVEL: debug
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  docker_proxy:
+    external: true
+  traefik:
+    external: true
