@@ -239,25 +239,25 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # Ombi - Allow Plex users to request content
-  ombi:
-    image: lscr.io/linuxserver/ombi
-    container_name: ${OMBI_CONTAINER_NAME:-ombi}
+  # overseerr - Request Management
+  overseerr:
+    image: lscr.io/linuxserver/overseerr
+    container_name: ${overseerr_CONTAINER_NAME:-overseerr}
     volumes:
-      - ${APPDATA_DIR}/downloader/ombi:/config
+      - ${APPDATA_DIR}/downloader/overseerr:/config
     networks:
       - traefik
     labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/ombi.png
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/overseerr.png
       net.unraid.docker.managed: composeman
       net.unraid.docker.shell: bash
-      net.unraid.docker.webui: https://${OMBI_HOSTNAME:-ombi}.${DOMAIN_NAME}
+      net.unraid.docker.webui: https://${overseerr_HOSTNAME:-overseerr}.${DOMAIN_NAME}
       traefik.enable: "true"
-      traefik.http.routers.ombi.entrypoints: https
-      traefik.http.routers.ombi.middlewares: auth-chain@file
-      traefik.http.routers.ombi.rule: Host(`${OMBI_HOSTNAME:-ombi}.${DOMAIN_NAME}`)
-      traefik.http.routers.ombi.service: ombi
-      traefik.http.services.ombi.loadbalancer.server.port: 3579
+      traefik.http.routers.overseerr.entrypoints: https
+      traefik.http.routers.overseerr.middlewares: auth-chain@file
+      traefik.http.routers.overseerr.rule: Host(`${overseerr_HOSTNAME:-overseerr}.${DOMAIN_NAME}`)
+      traefik.http.routers.overseerr.service: overseerr
+      traefik.http.services.overseerr.loadbalancer.server.port: 5055
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
