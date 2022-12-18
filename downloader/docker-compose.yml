@@ -122,6 +122,33 @@ services:
 
   ########## INDEXERS ##########
 
+  # Prowlarr - Indexer manager/proxy
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: ${PROWLARR_CONTAINER_NAME:-prowlarr}
+    volumes:
+      - ${APPDATA_DIR}/downloader/prowlarr:/config
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/prowlarr.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${PROWLARR_HOSTNAME:-prowlarr}.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.prowlarr.entrypoints: https
+      traefik.http.routers.prowlarr.middlewares: auth-chain@file
+      traefik.http.routers.prowlarr.rule: Host(`${PROWLARR_HOSTNAME:-prowlarr}.${DOMAIN_NAME}`)
+      traefik.http.routers.prowlarr.service: prowlarr
+      traefik.http.services.prowlarr.loadbalancer.server.port: 9696
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
   # NZBhydra2 - NZB indexers search tool
   hydra:
     image: lscr.io/linuxserver/nzbhydra2
