@@ -119,6 +119,7 @@ services:
     container_name: nextcloud-elasticsearch
     volumes:
       - ${APPDATA_DIR}/nextcloud/elasticsearch:/usr/share/elasticsearch/data
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - internal
     labels:

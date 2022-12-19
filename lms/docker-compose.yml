@@ -41,6 +41,7 @@ services:
     volumes:
       - ${APPDATA_DIR}/lms/musicip:/config
       - ${MUSIC_DIR}:/music
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - "10002:10002"
     networks:
