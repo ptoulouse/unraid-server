@@ -13,7 +13,7 @@ services:
       - traefik
     labels:
       net.unraid.docker.managed: composeman
-      net.unraid.docker.icon: ${MY_ICONS_URL}/mail-relay.png
+      net.unraid.docker.icon: ${MY_ICONS_URL}/ldap.png
       net.unraid.docker.webui: https://${LLDAP_HOSTNAME:-lldap}.${DOMAIN_NAME}
       net.unraid.docker.shell: bash
       traefik.enable: "true"
