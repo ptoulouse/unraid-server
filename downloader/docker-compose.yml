@@ -12,7 +12,7 @@ services:
     container_name: ${TRANSMISSION_CONTAINER_NAME:-transmission}
     volumes:
       - ${APPDATA_DIR}/downloader/transmission:/config
-      - ${DOWNLOADS_DIR}:/data
+      - ${DATA_DIR}/torrents:/data/completed
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "${TRANSMISSION_PROXY_PORT:-8118}:8118"
@@ -64,9 +64,7 @@ services:
     container_name: ${SABNZBD_CONTAINER_NAME:-sabnzbd}
     volumes:
       - ${APPDATA_DIR}/downloader/sabnzbd:/config
-      - ${DOWNLOADS_DIR}/completed:/downloads
-      - ${DOWNLOADS_DIR}/incomplete:/incomplete-downloads
-      - ${DOWNLOADS_DIR}/watch:/watch
+      - ${DATA_DIR}/usenet:/data/usenet
     networks:
       - traefik
     labels:
@@ -90,14 +88,13 @@ services:
 
   # Youtube-dl - Download videos from Youtube or other supported sites
   ytdl:
-    image: tzahi12345/youtubedl-material:latest
+    image: tzahi12345/youtubedl-material:nightly
     container_name: ${YTDL_CONTAINER_NAME:-ytdl}
     volumes:
       - ${APPDATA_DIR}/downloader/youtube-dl/appdata:/app/appdata
       - ${APPDATA_DIR}/downloader/youtube-dl/subscriptions:/app/subscriptions
       - ${APPDATA_DIR}/downloader/youtube-dl/users:/app/users
-      - ${DOWNLOADS_DIR}/youtube-dl/audio:/app/audio
-      - ${DOWNLOADS_DIR}/youtube-dl/video:/app/video
+      - ${DATA_DIR}/youtube-dl:/app
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     labels:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/youtubedl.png
@@ -149,34 +146,6 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # NZBhydra2 - NZB indexers search tool
-  hydra:
-    image: lscr.io/linuxserver/nzbhydra2
-    container_name: ${HYDRA_CONTAINER_NAME:-hydra}
-    volumes:
-      - ${APPDATA_DIR}/downloader/nzbhydra:/config
-      - ${DOWNLOADS_DIR}/complete:/downloads
-    networks:
-      - traefik
-    labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/nzbhydra.png
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: bash
-      net.unraid.docker.webui: https://${HYDRA_HOSTNAME:-hydra}.${DOMAIN_NAME}
-      traefik.enable: "true"
-      traefik.http.routers.hydra.entrypoints: https
-      traefik.http.routers.hydra.middlewares: auth-chain@file
-      traefik.http.routers.hydra.rule: Host(`${HYDRA_HOSTNAME:-hydra}.${DOMAIN_NAME}`)
-      traefik.http.routers.hydra.service: hydra
-      traefik.http.services.hydra.loadbalancer.server.port: 5076
-    environment:
-      PUID: ${PUID}
-      PGID: ${PGID}
-      TZ: ${TZ}
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-
   ########## MEDIA TRACKERS ##########
 
   # Sonarr - Monitor selected TV series and download, sort and rename new episodes
@@ -185,8 +154,7 @@ services:
     container_name: ${SONARR_CONTAINER_NAME:-sonarr}
     volumes:
       - ${APPDATA_DIR}/downloader/sonarr:/config
-      - ${DOWNLOADS_DIR}/completed:/downloads
-      - ${TV_DIR}:/tv
+      - ${DATA_DIR}:/data
     networks:
       - traefik
     labels:
@@ -214,8 +182,7 @@ services:
     container_name: ${RADARR_CONTAINER_NAME:-radarr}
     volumes:
       - ${APPDATA_DIR}/downloader/radarr:/config
-      - ${DOWNLOADS_DIR}/completed:/downloads
-      - ${MOVIES_DIR}:/movies
+      - ${DATA_DIR}:/data
     networks:
       - traefik
     labels:
@@ -243,8 +210,7 @@ services:
     container_name: ${LIDARR_CONTAINER_NAME:-lidarr}
     volumes:
       - ${APPDATA_DIR}/downloader/lidarr:/config
-      - ${DOWNLOADS_DIR}/completed:/downloads
-      - ${MUSIC_DIR}:/music
+      - ${DATA_DIR}:/data
     networks:
       - traefik
     labels:

@@ -7,7 +7,7 @@ http:
       middlewares:
         - auth-chain
       service: nas01
-      rule: Host(`nas01.{{env "DOMAIN_NAME"}}`)
+      rule: HostRegexp(`nas01.{{env "DOMAIN_NAME"}}`)
     nas02:
       entryPoints:
         - https
@@ -21,21 +21,42 @@ http:
       middlewares:
         - auth-chain
       service: octoprint
-      rule: Host(`octoprint.{{env "DOMAIN_NAME"}}`)
+      rule: HostRegexp(`octoprint.{{env "DOMAIN_NAME"}}`)
     router:
       entryPoints:
         - https
       middlewares:
         - auth-chain
       service: router
-      rule: Host(`router.{{env "DOMAIN_NAME"}}`)
+      rule: HostRegexp(`router.{{env "DOMAIN_NAME"}}`)
     pcp:
       entryPoints:
         - https
       middlewares:
         - auth-chain
       service: pcp
-      rule: Host(`pcp.{{env "DOMAIN_NAME"}}`)
+      rule: HostRegexp(`pcp.{{env "DOMAIN_NAME"}}`)
+    router02:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: router02
+      rule: Host(`router02.{{env "DOMAIN_NAME"}}`)
+    lms02:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: lms02
+      rule: Host(`lms02.{{env "DOMAIN_NAME"}}`)
+    voip:
+      entryPoints:
+        - https
+      middlewares:
+        - auth-chain
+      service: voip
+      rule: Host(`voip.{{env "DOMAIN_NAME"}}`)
 
   services:
     nas01:
@@ -58,3 +79,15 @@ http:
       loadBalancer:
         servers:
           - url: http://192.168.121.8:80
+    router02:
+      loadBalancer:
+        servers:
+          - url: http://192.168.122.1:80
+    lms02:
+      loadBalancer:
+        servers:
+          - url: http://192.168.122.11:9000
+    voip:
+      loadBalancer:
+        servers:
+          - url: http://192.168.122.5:80

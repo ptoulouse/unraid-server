@@ -10,7 +10,7 @@ services:
     networks:
       - mail_relay
     labels:
-      net.unraid.docker.icon: ${MY_ICONS_URL}/mail-relay.png
+      net.unraid.docker.icon: ${MY_ICONS_URL}/mail-relay2.png
       net.unraid.docker.managed: composeman
       net.unraid.docker.shell: bash
     environment:
