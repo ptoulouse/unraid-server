@@ -8,6 +8,10 @@ services:
     container_name: docker-proxy
     networks:
       - docker_proxy
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/docker-moby.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: sh
     environment:
       - CONTAINERS=1 # Allow access to viewing containers
       - POST=0 # Disallow any POST operations (effectively read-only)

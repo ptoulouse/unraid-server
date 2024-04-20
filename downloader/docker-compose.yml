@@ -94,7 +94,8 @@ services:
       - ${APPDATA_DIR}/downloader/youtube-dl/appdata:/app/appdata
       - ${APPDATA_DIR}/downloader/youtube-dl/subscriptions:/app/subscriptions
       - ${APPDATA_DIR}/downloader/youtube-dl/users:/app/users
-      - ${DATA_DIR}/youtube-dl:/app
+      - ${DATA_DIR}/youtube-dl/audio:/app/audio
+      - ${DATA_DIR}/youtube-dl/video:/app/video
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     labels:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/youtubedl.png

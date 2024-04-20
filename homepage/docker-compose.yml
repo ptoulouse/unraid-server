@@ -5,7 +5,7 @@
 services:
 
   homepage:
-    image: ghcr.io/benphelps/homepage:latest
+    image: ghcr.io/gethomepage/homepage:latest
     container_name: ${HOMEPAGE_CONTAINER_NAME:-homepage}
     volumes:
       - ${APPDATA_DIR}/homepage:/app/config
@@ -24,7 +24,10 @@ services:
       traefik.http.routers.homepage.service: homepage
       traefik.http.services.homepage.loadbalancer.server.port: 3000
     environment:
-      LOG_LEVEL: debug
+      PGID: ${PGID}
+      PUID: ${PUID}
+      TZ: ${TZ}
+
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
