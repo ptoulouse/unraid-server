@@ -12,7 +12,7 @@ services:
     container_name: ${TRANSMISSION_CONTAINER_NAME:-transmission}
     volumes:
       - ${APPDATA_DIR}/downloader/transmission:/config
-      - ${DATA_DIR}/torrents:/data/completed
+      - ${DATA_DIR}/torrents:/data
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "${TRANSMISSION_PROXY_PORT:-8118}:8118"
