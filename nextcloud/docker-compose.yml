@@ -1,151 +1,28 @@
+---
 #
-# NextCloud - Remote file access and file sync
+# Nextcloud - Content collaboration platform
 #
 services:
-
-  nextcloud:
-    image: nextcloud:stable
-    container_name: nextcloud
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    init: true
+    restart: always
+    container_name: nextcloud-aio-mastercontainer
     volumes:
-      - ${APPDATA_DIR}/nextcloud/nextcloud/:/var/www/html
-      - ${NEXTCLOUD_DIR}/data:/var/www/html/data
-      - /etc/localtime:/etc/localtime:ro
-    networks:
-      - internal
-      - mail_relay
-      - traefik
-    labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/nextcloud.png
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: bash
-      net.unraid.docker.webui: https://${NETCLOUD_HOSTNAME:-nextcloud}.${DOMAIN_NAME}
-      traefik.enable: "true"
-      traefik.http.middlewares.nextcloud-dav.redirectregex.permanent: "true"
-      traefik.http.middlewares.nextcloud-dav.redirectregex.regex: "^https://(.*)/.well-known/(card|cal)dav"
-      traefik.http.middlewares.nextcloud-dav.redirectregex.replacement: "https://$${1}/remote.php/dav/"
-      traefik.http.routers.nextcloud.entrypoints: https
-      traefik.http.routers.nextcloud.middlewares: nextcloud-dav@docker,auth-chain@file
-      traefik.http.routers.nextcloud.rule: Host(`${NETCLOUD_HOSTNAME:-nextcloud}.${DOMAIN_NAME}`)
-      traefik.http.routers.nextcloud.service: nextcloud
-      traefik.http.services.nextcloud.loadbalancer.server.port: 80
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 8083:8080
     environment:
-      NEXTCLOUD_ADMIN_USER: admin
-      NEXTCLOUD_ADMIN_PASSWORD_FILE: /run/secrets/admin_password
-      NEXTCLOUD_TRUSTED_DOMAINS: ${NETCLOUD_HOSTNAME:-nextcloud}.${DOMAIN_NAME}
-      OVERWRITEPROTOCOL: https
-      POSTGRES_DB: nextcloud
-      POSTGRES_HOST: nextcloud-db
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextcloud_db_password
-      POSTGRES_USER: nextcloud
-      REDIS_HOST: nextcloud-redis
-      REDIS_PORT: 6379
-      SMTP_HOST: mail-relay
-      SMTP_AUTHTYPE: NONE
-      MAIL_FROM_ADDRESS: ${NOTIFICATION_FROM_USER}
-      MAIL_DOMAIN: ${NOTIFICATION_FROM_DOMAIN}
-      TRUSTED_PROXIES: 172.0.0.0/8
-    secrets:
-      - admin_password
-      - nextcloud_db_password
-    depends_on:
-      - nextcloud-db
-      - nextcloud-redis
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
-
-  nextcloud-cron:
-    image: nextcloud:stable
-    container_name: nextcloud-cron
-    entrypoint: /cron.sh
-    volumes:
-      - ${APPDATA_DIR}/nextcloud/nextcloud:/var/www/html
-      - ${NEXTCLOUD_DIR}/data:/var/www/html/data
-      - /etc/localtime:/etc/localtime:ro
+      - APACHE_PORT=11000
+      - APACHE_IP_BINDING=0.0.0.0
+      - NEXTCLOUD_DATADIR=/mnt/user/nextcloud/data 
+      - NEXTCLOUD_STARTUP_APPS=deck tasks calendar contacts notes
     networks:
-      - internal
-    labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/nextcloud.png
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: bash
-    depends_on:
-      - nextcloud-db
-      - nextcloud-redis
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-  
-  nextcloud-db:
-    image: postgres:14-alpine
-    container_name: nextcloud-db
-    volumes:
-      - ${APPDATA_DIR}/nextcloud/db:/var/lib/postgresql/data
-    networks:
-      - internal
-    labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/postgres.png
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: bash
-    environment:
-      POSTGRES_DB: nextcloud
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextcloud_db_password
-      POSTGRES_USER: nextcloud
-      TZ: ${TZ}
-    secrets:
-      - nextcloud_db_password
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-
-  nextcloud-redis:
-    image: redis:alpine
-    container_name: nextcloud-redis
-    networks:
-      - internal
-    labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/redis.png
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: sh
-    environment:
-      TZ: ${TZ}
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-  
-  nextcloud-elasticsearch:
-    build: ./elasticsearch
-    container_name: nextcloud-elasticsearch
-    volumes:
-      - ${APPDATA_DIR}/nextcloud/elasticsearch:/usr/share/elasticsearch/data
-      - /etc/localtime:/etc/localtime:ro
-    networks:
-      - internal
-    labels:
-      com.centurylinklabs.watchtower.enable: "false"
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/elasticsearch.png
-      net.unraid.docker.managed: composeman
-      net.unraid.docker.shell: bash
-    environment:
-      discovery.type: "single-node"
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-      # xpack.security.enabled: "false"
-      # ingest.geoip.downloader.enabled: "false"
-      TZ: ${TZ}
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+      - nextcloud-aio
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer
 
 networks:
-  internal:
-  mail_relay:
-    external: true
-  traefik:
-    external: true
-
-secrets:
-  admin_password:
-    file: ${SECRETS_DIR}/admin_password
-  nextcloud_db_password:
-    file: ${SECRETS_DIR}/nextcloud_db_password
+  nextcloud-aio:
+    name: nextcloud-aio

@@ -1,0 +1,16 @@
+---
+http:
+  routers:
+    nextcloud:
+      rule: HostRegexp(`nextcloud.{{env "DOMAIN_NAME"}}`)
+      entrypoints:
+        - https
+      service: nextcloud
+      middlewares:
+        - auth-chain
+
+  services:
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:11000"
