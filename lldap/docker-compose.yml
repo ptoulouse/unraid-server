@@ -5,7 +5,7 @@
 services:
 
   lldap:
-    image: nitnelave/lldap:v0.4
+    image: lldap/lldap:stable
     container_name: ${LLDAP_CONTAINER_NAME:-lldap}
     volumes:
       - ${APPDATA_DIR}/lldap:/data
