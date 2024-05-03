@@ -35,8 +35,8 @@ services:
       FILE__DB_PASS: /run/secrets/bookstack_db_password
       OIDC_NAME: Authelia
       OIDC_DISPLAY_NAME_CLAIMS: name
-      OIDC_CLIENT_ID: bookstack
-      OIDC_CLIENT_SECRET: VIcA0Djk1mxGKEZrbb3Hb8qr0EsIsJEoVMC90NXPvJ5WRpXmMcVigY7wuvHEEVPf
+      OIDC_CLIENT_ID: whKwbHVBQp6igbRBQhoGjHZoOHubVTxTSwVcQNUV2Z3Mh9o3bFL6CSXlxV2m11PAvbnDk9Ab
+      OIDC_CLIENT_SECRET: O0Lw0VkjbBmD9aVkLjS6EyDXW8zkKwB4fKXkFlaJN5EamLao3nbHvv8cI57Cy9pg8ygeiGHN
       OIDC_ISSUER: https://${AUTHELIA_HOSTNAME:-auth}.${DOMAIN_NAME}
       OIDC_ISSUER_DISCOVER: "true"
       OIDC_USER_TO_GROUPS: "true"

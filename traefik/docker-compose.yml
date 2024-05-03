@@ -73,7 +73,7 @@ services:
     secrets:
       - cloudflare_api_token
     extra_hosts:
-      - host.docker.internal:172.17.0.1
+      - host.docker.internal:host-gateway
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

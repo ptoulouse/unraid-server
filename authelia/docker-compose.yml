@@ -27,10 +27,10 @@ services:
       traefik.http.routers.authelia.service: authelia
       traefik.http.services.authelia.loadbalancer.server.port: 9091
     environment:
-      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE: /run/secrets/lldap_admin_password
+      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE: /run/secrets/lldap_readonly_password
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /run/secrets/authelia_oidc_hmac_secret
       AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE: /run/secrets/authelia_oidc_private_key
-      AUTHELIA_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
       AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /run/secrets/authelia_storage_encryption_key
       PUID: ${PUID}
       PGID: ${PGID}
@@ -40,7 +40,7 @@ services:
       - authelia_oidc_hmac_secret
       - authelia_oidc_private_key
       - authelia_storage_encryption_key
-      - lldap_admin_password
+      - lldap_readonly_password
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -61,4 +61,4 @@ secrets:
   authelia_storage_encryption_key:
     file: ${SECRETS_DIR}/authelia_storage_encryption_key
   lldap_admin_password:
-    file: ${SECRETS_DIR}/lldap_admin_password
+    file: ${SECRETS_DIR}/lldap_readonly_password

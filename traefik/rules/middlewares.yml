@@ -28,7 +28,7 @@ http:
         # contentSecurityPolicy: "frame-ancestors '*.example.com:*';object-src 'none';script-src 'none';"
         permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()"
         customResponseHeaders:
-          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex"
+          X-Robots-Tag: "noindex,nofollow"
           server: ""
 
     auth:
