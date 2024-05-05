@@ -60,5 +60,5 @@ secrets:
     file: ${SECRETS_DIR}/authelia_oidc_private_key
   authelia_storage_encryption_key:
     file: ${SECRETS_DIR}/authelia_storage_encryption_key
-  lldap_admin_password:
+  lldap_readonly_password:
     file: ${SECRETS_DIR}/lldap_readonly_password
