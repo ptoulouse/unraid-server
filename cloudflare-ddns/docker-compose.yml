@@ -1,0 +1,37 @@
+---
+#
+# cloudflare-ddns - Cloudflare DDNS updater
+#
+services:
+
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    container_name: ${CLOUDFLAARE_DDNS_CONTAINER_NAME:-cloudflare-ddns}
+    networks:
+      - internal
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/cloudflare.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+    environment:
+      CF_API_TOKEN_FILE: /run/secrets/cf_api_token
+      DOMAINS: ${DOMAIN_NAME}
+      IP6_PROVIDER: none
+      PROXIED: "true"
+      TZ: ${TZ}
+    secrets:
+      - cf_api_token
+    restart: unless-stopped
+    user: ${PUID}:${PGID}
+    read_only: true
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  internal:
+
+secrets:
+  cf_api_token:
+    file: ${SECRETS_DIR}/cloudflare_api_token
