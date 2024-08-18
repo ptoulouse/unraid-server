@@ -32,6 +32,7 @@ services:
       DB_DATABASE: bookstack
       DB_HOST: ${BOOKSTACK_DB_CONTAINER_NAME:-bookstack-db}
       DB_USER: bookstack
+      EXPORT_PAGE_SIZE: letter
       FILE__DB_PASS: /run/secrets/bookstack_db_password
       OIDC_NAME: Authelia
       OIDC_DISPLAY_NAME_CLAIMS: name

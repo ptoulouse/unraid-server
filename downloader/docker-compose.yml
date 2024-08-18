@@ -12,7 +12,7 @@ services:
     container_name: ${TRANSMISSION_CONTAINER_NAME:-transmission}
     volumes:
       - ${APPDATA_DIR}/downloader/transmission:/config
-      - ${DATA_DIR}/torrents:/data
+      - ${DATA_DIR}/torrents:/data/torrents
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "${TRANSMISSION_PROXY_PORT:-8118}:8118"
@@ -40,6 +40,8 @@ services:
       OPENVPN_OPTS: --inactive 3600 --ping 10 --ping-exit 60
       PUID: ${PUID}
       PGID: ${PGID}
+      TRANSMISSION_DOWNLOAD_DIR: /data/torrents/completed
+      TRANSMISSION_INCOMPLETE_DIR: /data/torrents/incomplete
       TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: "true"
       TRANSMISSION_RPC_HOST_WHITELIST: "127.0.0.1,192.168.*.*"
       TRANSMISSION_RPC_USERNAME: ${TRANSMISSION_RPC_USERNAME}
@@ -47,6 +49,7 @@ services:
       TRANSMISSION_PEER_PORT: ${TRANSMISSION_PEER_PORT}
       TRANSMISSION_HOME: /config/transmission-home
       TRANSMISSION_UMASK: 002
+      TRANSMISSION_WATCH_DIR: /data/torrents/watch
       WEBPROXY_ENABLED: "true"
       TZ: ${TZ}
     restart: unless-stopped

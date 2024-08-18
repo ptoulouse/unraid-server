@@ -2,15 +2,23 @@
 http:
   routers:
     nextcloud:
-      rule: HostRegexp(`nextcloud.{{env "DOMAIN_NAME"}}`)
+      rule: Host(`nextcloud.{{env "DOMAIN_NAME"}}`)
       entrypoints:
         - https
       service: nextcloud
       middlewares:
         - auth-chain
+        - nextcloud-dav
 
   services:
     nextcloud:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:11000"
+
+  middlewares:
+    nextcloud-dav:
+      redirectRegex:
+        regex: "^https://(.*)/.well-known/(card|cal)dav"
+        replacement: "https://${1}/remote.php/dav/"
+        permanent: true

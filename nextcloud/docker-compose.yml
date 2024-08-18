@@ -22,8 +22,8 @@ services:
     environment:
       APACHE_PORT: "11000"
       APACHE_IP_BINDING: "0.0.0.0"
-      NEXTCLOUD_DATADIR: ${NEXTCLOUD_DIR}/data 
-      NEXTCLOUD_STARTUP_APPS: deck tasks calendar contacts notes
+      NEXTCLOUD_DATADIR: ${NEXTCLOUD_DIR}/data
+      NEXTCLOUD_ENABLE_DRI_DEVICE: "true"
     restart: always
 
 volumes:
