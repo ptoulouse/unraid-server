@@ -10,11 +10,11 @@ services:
       - ${APPDATA_DIR}/scrutiny/config:/opt/scrutiny/config
       - ${APPDATA_DIR}/scrutiny/influxdb:/opt/scrutiny/influxdb
     devices:
-      - /dev/sdb
-      - /dev/sdc
-      - /dev/sdd
-      - /dev/sde
-      - /dev/nvme0
+      - /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S59UNMFN804153R
+      - /dev/disk/by-id/ata-WDC_WD80EDBZ-11B0ZA0_VRGJ5PSK
+      - /dev/disk/by-id/ata-WDC_WD80EMZZ-11B4FB0_WD-CA03PHHG
+      - /dev/disk/by-id/ata-WDC_WD80EMZZ-11B4FB0_WD-CA036WZG
+      - /dev/disk/by-id/nvme-WDS500G3X0C-00SJG0_20408A804512
     ports:
       - "${SCRUTINY_PORT:-8080}:8080"
     networks:
