@@ -6,7 +6,7 @@ services:
 
   # Logitech Media Server - Music Server
   lms:
-    image: lmscommunity/logitechmediaserver:stable
+    image: lmscommunity/lyrionmusicserver:stable
     container_name: ${LMS_CONTAINER_NAME:-lms}
     volumes:
       - ${APPDATA_DIR}/lms/lms:/config
@@ -15,7 +15,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     network_mode: host
     labels:
-      net.unraid.docker.icon: ${MY_ICONS_URL}/logitech-media-server.png
+      net.unraid.docker.icon: ${MY_ICONS_URL}/lyrion-music-server.png
       net.unraid.docker.managed: composeman
       net.unraid.docker.shell: bash
       net.unraid.docker.webui: https://${LMS_HOSTNAME:-lms}.${DOMAIN_NAME}
