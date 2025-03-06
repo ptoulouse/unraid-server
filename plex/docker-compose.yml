@@ -14,7 +14,10 @@ services:
       - ${MUSIC_DIR}:/Music
       - /tmp:/transcode
       - ${TV_DIR}:/TV
+    devices:
+      - /dev/dri:/dev/dri
     network_mode: host
+    runtime: nvidia
     labels:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/plex.png
       net.unraid.docker.managed: composeman
@@ -31,6 +34,7 @@ services:
       PUID: ${PUID}
       VERSION: docker
       TZ: ${TZ}
+      NVIDIA_VISIBLE_DEVICES: all
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
