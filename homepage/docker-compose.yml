@@ -27,7 +27,7 @@ services:
       PGID: ${PGID}
       PUID: ${PUID}
       TZ: ${TZ}
-
+      HOMEPAGE_ALLOWED_HOSTS: homepage.ptoulouse.ca
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
