@@ -4,8 +4,6 @@
 #
 services:
 
-  ########## DOWNLOADERS ##########
-
   # Transmission OpenVPN - BitTorrent downloader with integrated OpenVPN client
   transmission:
     image: haugene/transmission-openvpn
@@ -121,8 +119,6 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  ########## INDEXERS ##########
-
   # Prowlarr - Indexer manager/proxy
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:develop
@@ -150,8 +146,6 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  ########## MEDIA TRACKERS ##########
-
   # Sonarr - Monitor selected TV series and download, sort and rename new episodes
   sonarr:
     image: lscr.io/linuxserver/sonarr
@@ -160,6 +154,7 @@ services:
       - ${APPDATA_DIR}/downloader/sonarr:/config
       - ${DATA_DIR}:/data
     networks:
+      - recyclarr
       - traefik
     labels:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/sonarr.png
@@ -188,6 +183,7 @@ services:
       - ${APPDATA_DIR}/downloader/radarr:/config
       - ${DATA_DIR}:/data
     networks:
+      - recyclarr
       - traefik
     labels:
       net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/radarr.png
@@ -208,7 +204,36 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # Lidarr - Monitor music albums and download, sort and rename them  
+  # Radarr - Monitor movies and download, sort and rename them  
+  radarr-fr:
+    image: lscr.io/linuxserver/radarr
+    container_name: ${RADARR_CONTAINER_NAME:-radarr}-fr
+    volumes:
+      - ${APPDATA_DIR}/downloader/radarr-fr:/config
+      - ${DATA_DIR}:/data
+    networks:
+      - recyclarr
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/radarr.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      net.unraid.docker.webui: https://${RADARR_HOSTNAME:-radarr}-fr.${DOMAIN_NAME}
+      traefik.enable: "true"
+      traefik.http.routers.radarr-fr.entrypoints: https
+      traefik.http.routers.radarr-fr.middlewares: auth-chain@file
+      traefik.http.routers.radar-fr.rule: Host(`${RADARR_HOSTNAME:-radarr}-fr.${DOMAIN_NAME}`)
+      traefik.http.routers.radarr-fr.service: radarr
+      traefik.http.services.radarr-fr.loadbalancer.server.port: 7879
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+   # Lidarr - Monitor music albums and download, sort and rename them  
   lidarr:
     image: lscr.io/linuxserver/lidarr
     container_name: ${LIDARR_CONTAINER_NAME:-lidarr}
@@ -236,7 +261,7 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # overseerr - Request Management
+  # Overseerr - Request Management
   overseerr:
     image: lscr.io/linuxserver/overseerr
     container_name: ${overseerr_CONTAINER_NAME:-overseerr}
@@ -263,6 +288,26 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  # Recyclarr - Automatically sync TRaSH Guides to your Sonarr and Radarr instances
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    volumes:
+      - ${APPDATA_DIR}/downloader/recyclarr:/config
+    networks:
+      - recyclarr
+    labels:
+      net.unraid.docker.icon: ${MY_ICONS_URL}/recyclarr.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+    environment:
+      TZ: ${TZ}
+    restart: unless-stopped
+    user: ${PUID}:${PGID}
+    security_opt:
+      - no-new-privileges:true
+
 networks:
+  recyclarr:
   traefik:
     external: true
