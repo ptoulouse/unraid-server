@@ -66,7 +66,7 @@ http:
     nas02:
       loadBalancer:
         servers:
-          - url: http://192.168.122.11:8080
+          - url: http://192.168.40.11:8080
     octoprint:
       loadBalancer:
         servers:
@@ -82,12 +82,12 @@ http:
     router02:
       loadBalancer:
         servers:
-          - url: http://192.168.122.1:80
+          - url: http://192.168.40.1:80
     lms02:
       loadBalancer:
         servers:
-          - url: http://192.168.122.11:9000
+          - url: http://192.168.40.11:9000
     voip:
       loadBalancer:
         servers:
-          - url: http://192.168.122.5:80
+          - url: http://192.168.40.6:80
