@@ -9,11 +9,13 @@ services:
     container_name: ${PLEX_CONTAINER_NAME:-plex}
     volumes:
       - ${APPDATA_DIR}/plex/plex:/config
-      - ${PHOTOS_DIR}:/Photos
-      - ${MOVIES_DIR}:/Movies
-      - ${MUSIC_DIR}:/Music
+      - ${PHOTOS_DIR}:/photos
+      - ${MEDIA_DIR}/movies:/movies
+      - ${MEDIA_DIR}/movies-fr:/movies-fr
+      - ${MEDIA_DIR}/empty:/Music
+      - ${MUSIC_DIR}:/music
       - /tmp:/transcode
-      - ${TV_DIR}:/TV
+      - ${MEDIA_DIR}/tv:/tv
     devices:
       - /dev/dri:/dev/dri
     network_mode: host
