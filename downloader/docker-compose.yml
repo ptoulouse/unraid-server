@@ -4,61 +4,39 @@
 #
 services:
 
-  # Transmission OpenVPN - BitTorrent downloader with integrated OpenVPN client
-  transmission:
-    image: haugene/transmission-openvpn
-    container_name: ${TRANSMISSION_CONTAINER_NAME:-transmission}
+  # qBittorrent - BiTorrent client
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
     volumes:
-      - ${APPDATA_DIR}/downloader/transmission:/config
+      - ${APPDATA_DIR}/downloader/qbittorrent:/config
+      - ${APPDATA_DIR}/downloader/gluetun:/gluetun
       - ${DATA_DIR}/torrents:/data/torrents
-      - /etc/localtime:/etc/localtime:ro
-    ports:
-      - "${TRANSMISSION_PROXY_PORT:-8118}:8118"
-      - "${TRANSMISSION_WEBUI_PORT:-9091}:9091"
-    networks:
-      - traefik
+    network_mode: service:gluetun
     labels:
-      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/transmission.png
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/qbittorrent.png
       net.unraid.docker.managed: composeman
       net.unraid.docker.shell: bash
-      net.unraid.docker.webui: https://${TRANSMISSION_HOSTNAME:-transmission}.${DOMAIN_NAME}
-      traefik.enable: "true"
-      traefik.http.routers.transmission.entrypoints: https
-      traefik.http.routers.transmission.middlewares: auth-chain@file
-      traefik.http.routers.transmission.rule: Host(`${TRANSMISSION_HOSTNAME:-transmission}.${DOMAIN_NAME}`)
-      traefik.http.routers.transmission.service: transmission
-      traefik.http.services.transmission.loadbalancer.server.port: 9091
+      net.unraid.docker.webui: https://${QBITTORRENT_HOSTNAME:-qbittorrent}.${DOMAIN_NAME}
     environment:
-      LOCAL_NETWORK: 192.168.0.0/16
-      LOG_TO_STDOUT: "true"
-      OPENVPN_CONFIG: ${TRANSMISSION_OPENVPN_CONFIG}
-      OPENVPN_PROVIDER: ${TRANSMISSION_OPENVPN_PROVIDER}
-      OPENVPN_USERNAME: ${TRANSMISSION_OPENVPN_USERNAME}
-      OPENVPN_PASSWORD: ${TRANSMISSION_OPENVPN_PASSWORD}
-      OPENVPN_OPTS: --inactive 3600 --ping 10 --ping-exit 60
       PUID: ${PUID}
       PGID: ${PGID}
-      TRANSMISSION_DOWNLOAD_DIR: /data/torrents/completed
-      TRANSMISSION_INCOMPLETE_DIR: /data/torrents/incomplete
-      TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: "true"
-      TRANSMISSION_RPC_HOST_WHITELIST: "127.0.0.1,192.168.*.*"
-      TRANSMISSION_RPC_USERNAME: ${TRANSMISSION_RPC_USERNAME}
-      TRANSMISSION_RPC_PASSWORD: ${TRANSMISSION_RPC_PASSWORD}
-      TRANSMISSION_PEER_PORT: ${TRANSMISSION_PEER_PORT}
-      TRANSMISSION_HOME: /config/transmission-home
-      TRANSMISSION_UMASK: 002
-      TRANSMISSION_WATCH_DIR: /data/torrents/watch
-      WEBPROXY_ENABLED: "true"
       TZ: ${TZ}
+      WEBUI_PORT: "8080"
+      TORRENTING_PORT: "6881"
+    depends_on:
+      gluetun:
+        condition: service_healthy
     restart: unless-stopped
-    dns:
-      - 1.0.0.1
-      - 1.1.1.1
-    cap_add:
-      - NET_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:8080 || exit 1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
+  
   # SABnzbd - Usenet NZB downloader 
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd
@@ -306,6 +284,46 @@ services:
     user: ${PUID}:${PGID}
     security_opt:
       - no-new-privileges:true
+
+  # Gluetun - VPN Client
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    volumes:
+      - ${APPDATA_DIR}/downloader/gluetun:/gluetun
+    ports:
+      - 8084:8000
+    networks:
+      - traefik
+    labels:
+      net.unraid.docker.icon: ${DASHBOARD_ICONS_URL}/gluetun.png
+      net.unraid.docker.managed: composeman
+      net.unraid.docker.shell: bash
+      traefik.enable: "true"
+      traefik.http.routers.qbittorrent.entrypoints: https
+      traefik.http.routers.qbittorrent.middlewares: auth-chain@file
+      traefik.http.routers.qbittorrent.rule: Host(`${QBITTORRENT_HOSTNAME:-qbittorrent}.${DOMAIN_NAME}`)
+      traefik.http.routers.qbittorrent.service: qbittorrent
+      traefik.http.services.qbittorrent.loadbalancer.server.port: 8080
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      DNS_ADDRESS: 10.2.0.1
+      PORT_FORWARD_ONLY: on
+      VPN_PORT_FORWARDING: on
+      VPN_PORT_FORWARDING_UP_COMMAND: >-
+        /bin/sh -c 'wget -O- --retry-connrefused
+        --post-data "json={\"listen_port\":{{PORTS}}}"
+        http://127.0.0.1:8080/api/v2/app/setPreferences 2>&1'
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
 
 networks:
   recyclarr:
